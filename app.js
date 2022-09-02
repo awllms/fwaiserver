@@ -10,6 +10,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const MAXTOKENS = 200;
+
 const port = process.env.PORT || 3001;
 
 const configuration = new Configuration({
@@ -24,6 +26,7 @@ app.get('*', (req, res) => {
 
 app.post('/ai', async (req, res) => {
     const {data, model} = req.body;
+    data["max_tokens"] = MAXTOKENS;
 
     try {
         const response = await openai.createCompletion(model, data);
