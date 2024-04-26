@@ -7,8 +7,26 @@ dotenv.config();
 
 const app = express();
 
+// const corsOptions = {
+//   origin: ["http://localhost:3000", "http://awllms.com", "https://awllms.com"],
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   optionsSuccessStatus: 204,
+//   credentials: true,
+// };
+app.options("*", cors());
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
-app.use(cors());
+
+// app.use((req, res, next) => {
+//   console.log(
+//     "Received request:",
+//     req.method,
+//     req.path,
+//     "from origin",
+//     req.headers.origin
+//   );
+//   next();
+// });
 
 const MAXTOKENS = 200;
 
@@ -21,15 +39,26 @@ const configuration = new Configuration({
 });
 
 const openai = new OpenAIApi(configuration);
+// const openai = new OpenAI();
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
 app.post("/ai", async (req, res) => {
+  req.headers.authorization = process.env.OPENAI_API_KEY;
   const { data, model } = req.body;
   data["max_tokens"] = MAXTOKENS;
 
+  // const completion = await openai.chat.completions.create({
+  //   ...data,
+  //   model: model,
+  // });
+
   try {
-    const response = await openai.createCompletion(model, data);
+    // const response = await openai.createCompletion(model, data);
+    const response = await openai.chat.completions.create({
+      ...data,
+      model: model,
+    });
     console.log(response.data);
 
     res.status(200).send(response.data);
