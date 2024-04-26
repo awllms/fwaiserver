@@ -55,7 +55,7 @@ app.post("/ai", async (req, res) => {
 
   try {
     // const response = await openai.createCompletion(model, data);
-    const response = await openai.chat.completions.create({
+    const response = await openai.createCompletion({
       ...data,
       model: model,
     });
